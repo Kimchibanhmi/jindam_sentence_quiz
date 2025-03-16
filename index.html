@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>중국어 문장 만들기 게임</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- 시작 팝업 -->
+    <div id="start-popup" class="popup">
+      <div class="popup-content">
+        <h2>HSK 3급 문장 퀴즈</h2>
+        <p>10일 동안 하루에 10문장씩, 총 100개의 문장을 배우게 됩니다.</p>
+        <p>단어 카드를 올바른 순서로 배열하여 문장을 완성하세요.</p>
+        <p>각 단계마다 주어진 질문에 맞는 단어들을 선택하세요!</p>
+        <button id="start-game-btn">게임 시작</button>
+      </div>
+    </div>
+
+    <!-- Day 완료 팝업 -->
+    <div id="day-complete-popup" class="popup hidden">
+      <div class="popup-content">
+        <h2>Day <span id="completed-day"></span> 완료!</h2>
+        <p>오늘의 문장들을 성공적으로 학습했습니다!</p>
+        <div id="completed-sentences-list"></div>
+        <p id="next-day-message"></p>
+        <div class="popup-buttons">
+          <button id="retry-day-btn">다시 풀기</button>
+          <button id="close-day-popup-btn">확인</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1>중국어 문장 만들기 게임</h1>
+
+      <div class="day-progress">
+        <div class="day-info">
+          <span>DAY </span><span id="current-day">1</span><span> / 10</span>
+        </div>
+      </div>
+
+      <div class="game-progress">
+        <div class="sentence-count">
+          문장: <span id="current-sentence">1</span>/10
+        </div>
+        <div class="timer">시간: <span id="time-left">20</span>초</div>
+      </div>
+
+      <!-- 완성된 문장 표시 영역 -->
+      <div id="full-sentence-area" class="full-sentence-area hidden">
+        <h3>완성된 문장: <span id="full-sentence"></span></h3>
+      </div>
+
+      <div class="translation-area">
+        <h3>문제: <span id="current-question"></span></h3>
+      </div>
+
+      <div class="answer-area" id="answer-area">
+        <!-- 사용자가 단어 카드를 놓을 영역 -->
+      </div>
+
+      <div class="word-cards" id="word-cards">
+        <!-- 단어 카드들이 여기에 표시됩니다 -->
+      </div>
+
+      <div class="controls">
+        <button id="check-btn">정답 확인</button>
+        <button id="next-btn" disabled>다음 문제</button>
+      </div>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

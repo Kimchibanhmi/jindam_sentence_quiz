@@ -1,0 +1,369 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* 팝업 스타일 */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: white;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.popup h2 {
+  color: #3498db;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.popup p {
+  margin-bottom: 15px;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+#start-game-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+#start-game-btn:hover {
+  background-color: #2980b9;
+}
+
+.hidden {
+  display: none;
+}
+
+.container {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* DAY 진행 상황 스타일 */
+.day-progress {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+  background-color: #3498db;
+  color: white;
+  padding: 5px 0;
+  border-radius: 5px;
+}
+
+.day-info {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.day-info span:nth-child(2) {
+  color: #ffdd00;
+  padding: 0 5px;
+}
+
+.game-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.timer {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* 완성된 문장 영역 스타일 */
+.full-sentence-area {
+  background-color: #fef9e6;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 2px solid #f1c40f;
+}
+
+.full-sentence-area h3 {
+  color: #7f8c8d;
+  font-size: 16px;
+}
+
+#full-sentence {
+  color: #e67e22;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.translation-area {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.answer-area {
+  min-height: 70px;
+  border: 2px dashed #3498db;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.word-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.word-card {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+}
+
+.word-card .pinyin {
+  font-size: 0.7em;
+  opacity: 0.8;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+button {
+  background-color: #2ecc71;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+#check-btn {
+  background-color: #3498db;
+}
+
+.result {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.correct {
+  color: #2ecc71;
+}
+
+.incorrect {
+  color: #e74c3c;
+}
+
+/* 흔들림 애니메이션 효과 */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.shake {
+  animation: shake 0.5s;
+}
+
+/* Day 완료 팝업 스타일 */
+#completed-sentences-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.completed-sentence-item {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eaeaea;
+  text-align: left;
+}
+
+.completed-sentence-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.chinese-text {
+  color: #e67e22;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.korean-text {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+#next-day-message {
+  font-size: 18px;
+  font-weight: bold;
+  color: #3498db;
+  margin: 15px 0;
+}
+
+#close-day-popup-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+#close-day-popup-btn:hover {
+  background-color: #2980b9;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+#retry-day-btn {
+  background-color: #e67e22;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+#retry-day-btn:hover {
+  background-color: #d35400;
+}
+
+/* Day 선택 모달 스타일 */
+.day-selection-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.day-selection-item {
+  background-color: #3498db;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.day-selection-item:hover {
+  background-color: #2980b9;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+#close-selection-modal-btn {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+#close-selection-modal-btn:hover {
+  background-color: #7f8c8d;
+}
