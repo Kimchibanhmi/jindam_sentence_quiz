@@ -419,7 +419,7 @@ export const sentenceData = [
     ],
   },
   {
-    translation: '그는 중국어를 할 수 있다.',
+    translation: '그는 중국어를 할 줄 안다.',
     stages: [
       {
         stageTranslation: '중국어',
@@ -432,17 +432,17 @@ export const sentenceData = [
         answer: ['说/shuō', '汉语/hànyǔ'],
       },
       {
-        stageTranslation: '할 수 있다',
+        stageTranslation: '~할 줄 알다',
         cards: ['会/huì'],
         answer: ['会/huì'],
       },
       {
-        stageTranslation: '중국어를 할 수 있다',
+        stageTranslation: '중국어를 할 줄 알다',
         cards: ['会/huì', '说/shuō', '汉语/hànyǔ'],
         answer: ['会/huì', '说/shuō', '汉语/hànyǔ'],
       },
       {
-        stageTranslation: '그는 중국어를 할 수 있다',
+        stageTranslation: '그는 중국어를 할 줄 알다',
         cards: ['他/tā', '会/huì', '说/shuō', '汉语/hànyǔ'],
         answer: ['他/tā', '会/huì', '说/shuō', '汉语/hànyǔ'],
       },
@@ -457,12 +457,12 @@ export const sentenceData = [
         answer: ['不但/bùdàn', '……'],
       },
       {
-        stageTranslation: '중국어를 말할 수 있을 뿐만 아니라',
+        stageTranslation: '중국어를 말할 줄 알 뿐만 아니라',
         cards: ['不但/bùdàn', '会/huì', '说/shuō', '汉语/hànyǔ'],
         answer: ['不但/bùdàn', '会/huì', '说/shuō', '汉语/hànyǔ'],
       },
       {
-        stageTranslation: '그는 중국어를 말할 수 있을 뿐만 아니라',
+        stageTranslation: '그는 중국어를 말할 줄 알 뿐만 아니라',
         cards: ['他/tā', '不但/bùdàn', '会/huì', '说/shuō', '汉语/hànyǔ'],
         answer: ['他/tā', '不但/bùdàn', '会/huì', '说/shuō', '汉语/hànyǔ'],
       },
