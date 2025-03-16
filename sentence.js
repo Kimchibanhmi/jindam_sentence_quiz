@@ -4049,3 +4049,38 @@ export const sentenceData = [
     ],
   },
 ];
+
+function isDayAvailable(day) {
+  // 이전 Day가 완료되었는지 확인
+  if (day > 1 && !isDayCompleted(day - 1)) {
+    return false;
+  }
+
+  // 현재 Day가 1이 아닌 경우 시간 제약 확인
+  if (day > 1) {
+    const lastCompletionDate = getLastCompletionDate(day - 1);
+    const today = new Date();
+
+    // 이전 Day 완료일의 자정과 현재 시간 비교
+    const midnightAfterCompletion = new Date(lastCompletionDate);
+    midnightAfterCompletion.setHours(24, 0, 0, 0);
+
+    if (today < midnightAfterCompletion) {
+      return false; // 자정이 지나지 않았으므로 아직 불가능
+    }
+  }
+
+  return true;
+}
+
+// 특정 Day의 마지막 완료 날짜를 가져오는 함수
+function getLastCompletionDate(day) {
+  const date = localStorage.getItem(`day${day}CompletionDate`);
+  return date ? new Date(date) : null;
+}
+
+// Day 완료 시 완료 날짜 저장
+function markDayAsCompleted(day) {
+  localStorage.setItem(`day${day}Completed`, 'true');
+  localStorage.setItem(`day${day}CompletionDate`, new Date().toString());
+}
