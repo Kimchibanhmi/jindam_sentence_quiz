@@ -530,7 +530,6 @@ export const sentenceData = [
           '会/huì',
           '说/shuō',
           '日语/rìyǔ',
-          '……',
         ],
       },
     ],
