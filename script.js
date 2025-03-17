@@ -13,7 +13,7 @@ let currentDay = 1; // 현재 일차
 const SENTENCES_PER_DAY = 10; // 하루당 문장 수
 const TOTAL_DAYS = 10; // 총 일수
 let allWordCards = []; // 현재 문장의 모든 단어 카드를 저장하는 배열
-let completedSentences = []; // 완료한 문장들을 저장하는 배열
+let completedSentences = [];
 let completedDays = []; // 완료한 Day들을 저장하는 배열
 let lastDayUnlockTime = null; // 마지막으로 Day가 언락된 시간
 let completedSentencesByDay = {}; // Day별 완성 문장을 저장하는 객체
@@ -146,30 +146,38 @@ function getNextIncompleteDay() {
     return 1;
   }
 
-  // 시간 제약 검사 (Day 1 이후의 Day는 자정 이후에만 접근 가능)
-  if (lastDayUnlockTime) {
-    const lastUnlock = new Date(lastDayUnlockTime);
-    const nextMidnight = new Date(lastUnlock);
-    nextMidnight.setDate(nextMidnight.getDate() + 1);
-    nextMidnight.setHours(0, 0, 0, 0);
-
-    // 자정이 지나지 않았으면 가장 최근 완료한 Day만 접근 가능
-    if (now < nextMidnight) {
-      console.log(
-        '아직 자정이 지나지 않았으므로 다음 Day로 진행할 수 없습니다.'
-      );
-      return completedDays.length > 0 ? Math.max(...completedDays) : 1;
+  // 다음 미완료 Day 찾기
+  for (let day = 2; day <= TOTAL_DAYS; day++) {
+    // 이전 Day가 완료되지 않았으면 접근 불가
+    if (!completedDays.includes(day - 1)) {
+      continue;
     }
-  }
 
-  // 자정이 지났거나 lastDayUnlockTime이 없으면 다음 미완료 Day 반환
-  for (let day = 1; day <= TOTAL_DAYS; day++) {
-    if (!completedDays.includes(day)) {
+    // 해당 Day가 이미 완료되었으면 다음으로
+    if (completedDays.includes(day)) {
+      continue;
+    }
+
+    // 시간 제약 검사 - 이전 Day 완료 후 자정이 지났는지 확인
+    if (lastDayUnlockTime) {
+      const lastUnlock = new Date(lastDayUnlockTime);
+      const nextMidnight = new Date(lastUnlock);
+      nextMidnight.setDate(nextMidnight.getDate() + 1);
+      nextMidnight.setHours(0, 0, 0, 0);
+
+      // 자정이 지나지 않았으면 아직 접근 불가
+      if (now < nextMidnight) {
+        console.log(`Day ${day}는 자정이 지나지 않아 아직 접근할 수 없습니다.`);
+        break;
+      }
+
+      // 자정이 지났으면 이 Day 접근 가능
       return day;
     }
   }
 
-  return 1; // 모든 Day가 완료되었을 경우 Day 1로 돌아감
+  // 접근 가능한 Day가 없으면 완료한 가장 높은 Day 반환
+  return completedDays.length > 0 ? Math.max(...completedDays) : 1;
 }
 
 // 새로운 Day 언락 체크
@@ -599,17 +607,28 @@ function showDayCompletePopup() {
 
   // 확인 버튼 상태 설정 (마지막 Day가 아니고 자정 이전이면 비활성화)
   if (!canAccessNextDay && currentDay < TOTAL_DAYS) {
-    closeDayPopupBtn.disabled = true;
-    closeDayPopupBtn.style.backgroundColor = '#ccc';
-    closeDayPopupBtn.style.cursor = 'not-allowed';
-    closeDayPopupBtn.textContent = '자정 이후 확인 가능';
-
-    // 자정까지 남은 시간 계산 및 표시
+    // 시간 계산 변수 정의
     const timeUntilMidnight = nextMidnight - now;
     const hoursLeft = Math.floor(timeUntilMidnight / (1000 * 60 * 60));
     const minutesLeft = Math.floor(
       (timeUntilMidnight % (1000 * 60 * 60)) / (1000 * 60)
     );
+
+    // 모든 Day는 다음날 자정 이후에만 접근 가능
+    closeDayPopupBtn.disabled = true;
+    closeDayPopupBtn.style.backgroundColor = '#ccc';
+    closeDayPopupBtn.style.cursor = 'not-allowed';
+    closeDayPopupBtn.textContent = '자정 이후 확인 가능';
+
+    // 디버깅을 위해 로그 추가
+    console.log('자정 이전 상태 - 버튼 비활성화:', {
+      currentDay,
+      now: now.toString(),
+      lastUnlock: lastUnlock.toString(),
+      nextMidnight: nextMidnight.toString(),
+      isAfterMidnight,
+      canAccessNextDay,
+    });
 
     // 남은 시간 표시를 위한 요소 추가
     const timeLeftElement = document.createElement('div');
@@ -667,6 +686,7 @@ function showDayCompletePopup() {
     nextDayMessage.style.fontSize = '20px';
     nextDayMessage.style.color = '#e74c3c';
   } else if (currentDay < TOTAL_DAYS) {
+    // 모든 Day는 다음날 자정 이후에만 접근 가능
     // Day 완료 후 자정까지 남은 시간 계산
     const timeUntilMidnight = nextMidnight - now;
     const hoursLeft = Math.floor(timeUntilMidnight / (1000 * 60 * 60));
