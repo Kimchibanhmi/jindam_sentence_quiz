@@ -588,6 +588,7 @@ function showDayCompletePopup() {
     completedDays.push(currentDay);
     // 현재 시간을 언락 시간으로 설정 (모든 Day에 적용)
     lastDayUnlockTime = new Date().toISOString();
+    console.log("Day 완료 시간 설정:", lastDayUnlockTime);
     saveGameState();
   }
 
