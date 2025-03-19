@@ -158,22 +158,9 @@ function getNextIncompleteDay() {
       continue;
     }
 
-    // 시간 제약 검사 - 이전 Day 완료 후 자정이 지났는지 확인
-    if (lastDayUnlockTime) {
-      const lastUnlock = new Date(lastDayUnlockTime);
-      const nextMidnight = new Date(lastUnlock);
-      nextMidnight.setDate(nextMidnight.getDate() + 1);
-      nextMidnight.setHours(0, 0, 0, 0);
-
-      // 자정이 지나지 않았으면 아직 접근 불가
-      if (now < nextMidnight) {
-        console.log(`Day ${day}는 자정이 지나지 않아 아직 접근할 수 없습니다.`);
-        break;
-      }
-
-      // 자정이 지났으면 이 Day 접근 가능
-      return day;
-    }
+    // 자정 제한 해제 - 항상 다음 Day 접근 가능
+    console.log(`자정 제한 해제: Day ${day}로 바로 진행할 수 있습니다.`);
+    return day;
   }
 
   // 접근 가능한 Day가 없으면 완료한 가장 높은 Day 반환
@@ -617,14 +604,14 @@ function showDayCompletePopup() {
       (timeUntilMidnight % (1000 * 60 * 60)) / (1000 * 60)
     );
 
-    // 모든 Day는 다음날 자정 이후에만 접근 가능
-    closeDayPopupBtn.disabled = true;
-    closeDayPopupBtn.style.backgroundColor = '#ccc';
-    closeDayPopupBtn.style.cursor = 'not-allowed';
-    closeDayPopupBtn.textContent = '자정 이후 확인 가능';
+    // 자정 제한 해제 - 버튼 항상 활성화
+    closeDayPopupBtn.disabled = false;
+    closeDayPopupBtn.style.backgroundColor = '';
+    closeDayPopupBtn.style.cursor = 'pointer';
+    closeDayPopupBtn.textContent = '확인';
 
     // 디버깅을 위해 로그 추가
-    console.log('자정 이전 상태 - 버튼 비활성화:', {
+    console.log('자정 제한 해제됨 - 버튼 활성화:', {
       currentDay,
       now: now.toString(),
       lastUnlock: lastUnlock.toString(),
@@ -633,13 +620,15 @@ function showDayCompletePopup() {
       canAccessNextDay,
     });
 
-    // 남은 시간 표시를 위한 요소 추가
+    // 남은 시간 표시 대신 안내 메시지 표시
     const timeLeftElement = document.createElement('div');
     timeLeftElement.id = 'time-until-unlock';
     timeLeftElement.style.marginTop = '15px';
     timeLeftElement.style.fontSize = '16px';
-    timeLeftElement.style.color = '#e74c3c';
-    timeLeftElement.textContent = `다음 Day 열림까지 ${hoursLeft}시간 ${minutesLeft}분 남았습니다`;
+    timeLeftElement.style.color = '#27ae60';
+    timeLeftElement.textContent = `자정 제한이 해제되었습니다. 바로 Day ${
+      currentDay + 1
+    }로 진행할 수 있습니다.`;
 
     // 기존 요소가 있으면 제거 후 추가
     const existingTimeLeft = document.getElementById('time-until-unlock');
@@ -651,29 +640,7 @@ function showDayCompletePopup() {
     const popupContent = document.querySelector('.popup-content');
     popupContent.appendChild(timeLeftElement);
 
-    // 타이머 설정 (1분마다 업데이트)
-    const unlockTimer = setInterval(() => {
-      const currentTime = new Date();
-      const remainingTime = nextMidnight - currentTime;
-
-      if (remainingTime <= 0) {
-        // 자정이 지났으면 버튼 활성화
-        clearInterval(unlockTimer);
-        closeDayPopupBtn.disabled = false;
-        closeDayPopupBtn.style.backgroundColor = '';
-        closeDayPopupBtn.style.cursor = 'pointer';
-        closeDayPopupBtn.textContent = '확인';
-        timeLeftElement.textContent = '다음 Day가 열렸습니다!';
-        timeLeftElement.style.color = '#27ae60';
-      } else {
-        // 남은 시간 업데이트
-        const hoursRemaining = Math.floor(remainingTime / (1000 * 60 * 60));
-        const minutesRemaining = Math.floor(
-          (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
-        );
-        timeLeftElement.textContent = `다음 Day 열림까지 ${hoursRemaining}시간 ${minutesRemaining}분 남았습니다`;
-      }
-    }, 60000); // 1분마다 업데이트
+    // 타이머 설정 불필요
   } else {
     // 자정 이후이거나 마지막 Day면 버튼 활성화
     closeDayPopupBtn.disabled = false;
@@ -689,21 +656,8 @@ function showDayCompletePopup() {
     nextDayMessage.style.fontSize = '20px';
     nextDayMessage.style.color = '#e74c3c';
   } else if (currentDay < TOTAL_DAYS) {
-    // 모든 Day는 다음날 자정 이후에만 접근 가능
-    // Day 완료 후 자정까지 남은 시간 계산
-    const timeUntilMidnight = nextMidnight - now;
-    const hoursLeft = Math.floor(timeUntilMidnight / (1000 * 60 * 60));
-    const minutesLeft = Math.floor(
-      (timeUntilMidnight % (1000 * 60 * 60)) / (1000 * 60)
-    );
-
-    if (now < nextMidnight) {
-      nextDayMessage.textContent = `Day ${
-        currentDay + 1
-      }는 자정부터 오픈됩니다. (남은 시간: ${hoursLeft}시간 ${minutesLeft}분)`;
-    } else {
-      nextDayMessage.textContent = `Day ${currentDay + 1}가 오픈되었습니다!`;
-    }
+    nextDayMessage.textContent = `Day ${currentDay + 1}가 오픈되었습니다!`;
+    nextDayMessage.style.color = '#27ae60';
   } else {
     nextDayMessage.textContent = '축하합니다! Day 10 학습을 완료했습니다!';
   }
