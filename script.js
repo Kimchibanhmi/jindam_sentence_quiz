@@ -15,7 +15,6 @@ const TOTAL_DAYS = 10; // 총 일수
 let allWordCards = []; // 현재 문장의 모든 단어 카드를 저장하는 배열
 let completedSentences = [];
 let completedDays = []; // 완료한 Day들을 저장하는 배열
-let lastDayUnlockTime = null; // 마지막으로 Day가 언락된 시간
 let completedSentencesByDay = {}; // Day별 완성 문장을 저장하는 객체
 
 // DOM 요소
@@ -83,8 +82,7 @@ function saveGameState() {
   const gameState = {
     completedDays: completedDays,
     currentDay: currentDay,
-    lastDayUnlockTime: lastDayUnlockTime,
-    completedSentencesByDay: completedSentencesByDay, // 추가: Day별 완성 문장 저장
+    completedSentencesByDay: completedSentencesByDay, // Day별 완성 문장 저장
   };
 
   localStorage.setItem('hskGameState', JSON.stringify(gameState));
@@ -98,10 +96,9 @@ function loadGameState() {
     if (savedState) {
       const gameState = JSON.parse(savedState);
       completedDays = gameState.completedDays || [];
-      lastDayUnlockTime = gameState.lastDayUnlockTime || null;
-      completedSentencesByDay = gameState.completedSentencesByDay || {}; // 추가: Day별 완성 문장 로드
+      completedSentencesByDay = gameState.completedSentencesByDay || {}; // Day별 완성 문장 로드
 
-      // 진행 가능한 가장 낮은 Day 확인 (시간 제약 고려)
+      // 진행 가능한 가장 낮은 Day 확인
       const nextIncompleteDay = getNextIncompleteDay();
       currentDay = nextIncompleteDay;
 
@@ -110,9 +107,6 @@ function loadGameState() {
           ', '
         )})`
       );
-
-      // 새 Day가 열렸는지 확인
-      checkNewDayUnlock();
 
       // 게임 시작 후 Day 1이 완료되었다면 완료 팝업 표시
       if (gameStarted && completedDays.includes(1)) {
@@ -132,15 +126,12 @@ function loadGameState() {
     // 오류 발생 시 기본 상태 사용
     completedDays = [];
     currentDay = 1;
-    lastDayUnlockTime = null;
     completedSentencesByDay = {};
   }
 }
 
-// 다음 미완료 Day 가져오기 (시간 제약 고려)
+// 다음 미완료 Day 가져오기
 function getNextIncompleteDay() {
-  const now = new Date();
-
   // Day 1은 항상 접근 가능
   if (!completedDays.includes(1)) {
     return 1;
@@ -158,38 +149,12 @@ function getNextIncompleteDay() {
       continue;
     }
 
-    // 자정 제한 해제 - 항상 다음 Day 접근 가능
-    console.log(`자정 제한 해제: Day ${day}로 바로 진행할 수 있습니다.`);
+    // 이전 Day가 완료되었고 현재 Day가 미완료이면 이 Day 접근 가능
     return day;
   }
 
   // 접근 가능한 Day가 없으면 완료한 가장 높은 Day 반환
   return completedDays.length > 0 ? Math.max(...completedDays) : 1;
-}
-
-// 새로운 Day 언락 체크
-function checkNewDayUnlock() {
-  const now = new Date();
-
-  // 마지막 언락 시간이 있고, 현재 시간이 마지막 언락 다음 날 자정 이후인지 확인
-  if (lastDayUnlockTime) {
-    const lastUnlock = new Date(lastDayUnlockTime);
-    const nextMidnight = new Date(lastUnlock);
-    nextMidnight.setDate(nextMidnight.getDate() + 1);
-    nextMidnight.setHours(0, 0, 0, 0);
-
-    if (now >= nextMidnight && completedDays.length < TOTAL_DAYS) {
-      // 다음 Day 언락
-      lastDayUnlockTime = now.toISOString();
-      saveGameState();
-
-      alert(`Day ${completedDays.length + 2}가 오픈되었습니다!`);
-    }
-  } else if (completedDays.length === 0) {
-    // 처음 시작할 때는 Day 1이 바로 언락됨
-    lastDayUnlockTime = now.toISOString();
-    saveGameState();
-  }
 }
 
 // 현재 일차에 해당하는 문장 가져오기
@@ -573,9 +538,6 @@ function showDayCompletePopup() {
   // Day 완료 처리
   if (!completedDays.includes(currentDay)) {
     completedDays.push(currentDay);
-    // 현재 시간을 언락 시간으로 설정
-    lastDayUnlockTime = new Date().toISOString();
-    console.log('Day 완료 시간 설정:', lastDayUnlockTime);
     saveGameState();
   }
 
@@ -584,70 +546,11 @@ function showDayCompletePopup() {
     completedDays.length === TOTAL_DAYS &&
     completedDays.every((day) => day >= 1 && day <= TOTAL_DAYS);
 
-  const now = new Date();
-  const lastUnlock = lastDayUnlockTime
-    ? new Date(lastDayUnlockTime)
-    : new Date();
-  const nextMidnight = new Date(lastUnlock);
-  nextMidnight.setDate(nextMidnight.getDate() + 1);
-  nextMidnight.setHours(0, 0, 0, 0);
-
-  const isAfterMidnight = now >= nextMidnight;
-  const canAccessNextDay = isAfterMidnight || currentDay === TOTAL_DAYS;
-
-  // 확인 버튼 상태 설정 (마지막 Day가 아니고 자정 이전이면 비활성화)
-  if (!canAccessNextDay && currentDay < TOTAL_DAYS) {
-    // 시간 계산 변수 정의
-    const timeUntilMidnight = nextMidnight - now;
-    const hoursLeft = Math.floor(timeUntilMidnight / (1000 * 60 * 60));
-    const minutesLeft = Math.floor(
-      (timeUntilMidnight % (1000 * 60 * 60)) / (1000 * 60)
-    );
-
-    // 자정 제한 해제 - 버튼 항상 활성화
-    closeDayPopupBtn.disabled = false;
-    closeDayPopupBtn.style.backgroundColor = '';
-    closeDayPopupBtn.style.cursor = 'pointer';
-    closeDayPopupBtn.textContent = '확인';
-
-    // 디버깅을 위해 로그 추가
-    console.log('자정 제한 해제됨 - 버튼 활성화:', {
-      currentDay,
-      now: now.toString(),
-      lastUnlock: lastUnlock.toString(),
-      nextMidnight: nextMidnight.toString(),
-      isAfterMidnight,
-      canAccessNextDay,
-    });
-
-    // 남은 시간 표시 대신 안내 메시지 표시
-    const timeLeftElement = document.createElement('div');
-    timeLeftElement.id = 'time-until-unlock';
-    timeLeftElement.style.marginTop = '15px';
-    timeLeftElement.style.fontSize = '16px';
-    timeLeftElement.style.color = '#27ae60';
-    timeLeftElement.textContent = `자정 제한이 해제되었습니다. 바로 Day ${
-      currentDay + 1
-    }로 진행할 수 있습니다.`;
-
-    // 기존 요소가 있으면 제거 후 추가
-    const existingTimeLeft = document.getElementById('time-until-unlock');
-    if (existingTimeLeft) {
-      existingTimeLeft.parentNode.removeChild(existingTimeLeft);
-    }
-
-    // 팝업에 요소 추가
-    const popupContent = document.querySelector('.popup-content');
-    popupContent.appendChild(timeLeftElement);
-
-    // 타이머 설정 불필요
-  } else {
-    // 자정 이후이거나 마지막 Day면 버튼 활성화
-    closeDayPopupBtn.disabled = false;
-    closeDayPopupBtn.style.backgroundColor = '';
-    closeDayPopupBtn.style.cursor = 'pointer';
-    closeDayPopupBtn.textContent = '확인';
-  }
+  // 확인 버튼 항상 활성화
+  closeDayPopupBtn.disabled = false;
+  closeDayPopupBtn.style.backgroundColor = '';
+  closeDayPopupBtn.style.cursor = 'pointer';
+  closeDayPopupBtn.textContent = '확인';
 
   // 다음 Day 메시지 또는 전체 완료 메시지
   if (allDaysCompleted) {
@@ -670,14 +573,9 @@ function showDayCompletePopup() {
 
   // 확인 버튼 이벤트 처리 수정
   closeDayPopupBtn.onclick = function () {
-    // 버튼이 비활성화되어 있으면 동작하지 않음
-    if (closeDayPopupBtn.disabled) {
-      return;
-    }
-
     dayCompletePopup.classList.add('hidden');
 
-    // 다음에 진행할 Day 결정 (시간 제약 고려)
+    // 다음에 진행할 Day 결정
     const nextAvailableDay = getNextIncompleteDay();
 
     // 현재 Day와 다음 진행 가능한 Day 로그 출력
