@@ -64,9 +64,6 @@ body {
   font-size: 16px;
   margin-top: 20px;
   transition: background-color 0.3s;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .popup button:hover {
@@ -330,4 +327,22 @@ button:disabled {
     padding: 10px 20px;
     font-size: 14px;
   }
+}
+
+/* 팝업 버튼 그룹 스타일 강화 */
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* 버튼 개별 스타일 */
+#retry-day-btn,
+#close-day-popup-btn {
+  margin-top: 0;
+  flex: 0 1 auto;
+  min-width: 120px;
 }
