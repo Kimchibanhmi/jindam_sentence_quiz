@@ -52,6 +52,7 @@ body {
 .popup p {
   color: #34495e;
   line-height: 1.6;
+  text-align: center;
 }
 
 .popup button {
@@ -277,6 +278,37 @@ button:disabled {
   color: #7f8c8d;
 }
 
+/* Day 헤더 스타일 */
+.day-header {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding: 8px 0;
+  background-color: #f0f8ff;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.day-header h3 {
+  margin: 0;
+  color: #2980b9;
+  font-size: 18px;
+}
+
+/* Day 구분선 */
+.day-divider {
+  margin: 20px 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #3498db, transparent);
+}
+
+/* 문장 없음 메시지 */
+.no-sentences-message {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  padding: 10px;
+}
+
 /* Day 선택 모달 */
 .day-selection-list {
   display: grid;
@@ -345,4 +377,18 @@ button:disabled {
   margin-top: 0;
   flex: 0 1 auto;
   min-width: 120px;
+}
+
+/* history-info 스타일 */
+.history-info {
+  font-size: 14px;
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+#start-game-btn {
+  display: block;
+  margin: 15px auto;
 }
