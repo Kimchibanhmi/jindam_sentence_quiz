@@ -632,8 +632,7 @@ export const sentenceData = [
           '吃/chī',
           '哪些/nǎxiē',
           '菜/cài',
-          '哪/nǎ'
-          ,
+          '哪/nǎ',
         ],
         answer: [
           '来/lái',
