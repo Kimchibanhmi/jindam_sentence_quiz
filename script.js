@@ -501,40 +501,6 @@ function showDayCompletePopup() {
     saveAllDaySentences(currentDay);
   }
 
-  // 현재 Day의 완성 문장 목록 표시
-  const daySentences = completedSentencesByDay[currentDay] || [];
-
-  console.log(`Day ${currentDay} 완료 팝업 표시:`, daySentences);
-
-  if (daySentences.length === 0) {
-    // 문장이 없으면 자동으로 생성
-    saveAllDaySentences(currentDay);
-    console.log(
-      `Day ${currentDay} 문장 자동 생성 후:`,
-      completedSentencesByDay[currentDay]
-    );
-  }
-
-  // 다시 가져오기
-  const updatedSentences = completedSentencesByDay[currentDay] || [];
-
-  updatedSentences.forEach((sentence, index) => {
-    const sentenceItem = document.createElement('div');
-    sentenceItem.className = 'completed-sentence-item';
-
-    const chineseText = document.createElement('div');
-    chineseText.className = 'chinese-text';
-    chineseText.textContent = `${index + 1}. ${sentence.chinese}`;
-
-    const koreanText = document.createElement('div');
-    koreanText.className = 'korean-text';
-    koreanText.textContent = sentence.korean;
-
-    sentenceItem.appendChild(chineseText);
-    sentenceItem.appendChild(koreanText);
-    completedSentencesList.appendChild(sentenceItem);
-  });
-
   // Day 완료 처리
   if (!completedDays.includes(currentDay)) {
     completedDays.push(currentDay);
@@ -564,6 +530,61 @@ function showDayCompletePopup() {
   } else {
     nextDayMessage.textContent = '축하합니다! Day 10 학습을 완료했습니다!';
   }
+
+  // 완료한 모든 Day의 문장을 역순으로 표시 (최신 Day부터)
+  const completedDaysSorted = [...completedDays].sort((a, b) => b - a); // 내림차순 정렬
+
+  // 각 Day별로 섹션 추가
+  completedDaysSorted.forEach((day) => {
+    // Day 별 헤더 추가
+    const dayHeader = document.createElement('div');
+    dayHeader.className = 'day-header';
+    dayHeader.innerHTML = `<h3>Day ${day} 문장</h3>`;
+    completedSentencesList.appendChild(dayHeader);
+
+    // 해당 Day의 문장 로드 확인
+    if (
+      !completedSentencesByDay[day] ||
+      completedSentencesByDay[day].length === 0
+    ) {
+      saveAllDaySentences(day);
+    }
+
+    const daySentences = completedSentencesByDay[day] || [];
+
+    // 문장 목록 추가
+    if (daySentences.length > 0) {
+      daySentences.forEach((sentence, index) => {
+        const sentenceItem = document.createElement('div');
+        sentenceItem.className = 'completed-sentence-item';
+
+        const chineseText = document.createElement('div');
+        chineseText.className = 'chinese-text';
+        chineseText.textContent = `${index + 1}. ${sentence.chinese}`;
+
+        const koreanText = document.createElement('div');
+        koreanText.className = 'korean-text';
+        koreanText.textContent = sentence.korean;
+
+        sentenceItem.appendChild(chineseText);
+        sentenceItem.appendChild(koreanText);
+        completedSentencesList.appendChild(sentenceItem);
+      });
+    } else {
+      // 문장이 없는 경우 메시지 표시
+      const noSentencesMsg = document.createElement('div');
+      noSentencesMsg.className = 'no-sentences-message';
+      noSentencesMsg.textContent = '이 Day의 문장 데이터가 없습니다.';
+      completedSentencesList.appendChild(noSentencesMsg);
+    }
+
+    // Day 구분선 추가 (마지막 Day 제외)
+    if (day !== completedDaysSorted[completedDaysSorted.length - 1]) {
+      const divider = document.createElement('div');
+      divider.className = 'day-divider';
+      completedSentencesList.appendChild(divider);
+    }
+  });
 
   // 팝업 표시
   dayCompletePopup.classList.remove('hidden');
